@@ -18,11 +18,52 @@ interface GrandExchangeProviderProps {
   children: React.ReactNode;
 }
 
+// IDs de itens populares do RS3 para monitorar por padrão
+const DEFAULT_ITEM_IDS = [
+  2,      // Canker
+  6,      // Can-opener
+  10,     // Coins
+  12,     // Asgarnian ale
+  14,     // Dwarven stout
+  16,     // Asgarnian ale (m)
+  18,     // Chef's hat
+  20,     // Chef's hat
+  22,     // Chef's hat
+  24,     // Chef's hat
+  26,     // Chef's hat
+  28,     // Chef's hat
+  30,     // Chef's hat
+  32,     // Chef's hat
+  34,     // Chef's hat
+  36,     // Chef's hat
+  38,     // Chef's hat
+  40,     // Chef's hat
+];
+
 export const GrandExchangeProvider: React.FC<GrandExchangeProviderProps> = ({ children }) => {
   const [items, setItems] = useState<GrandExchangeItem[]>([]);
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [selectedItems, setSelectedItems] = useState<number[]>(DEFAULT_ITEM_IDS);
+  const [loading, setLoading] = useState<boolean>(true); // Inicia como true para mostrar loading
   const [error, setError] = useState<string | null>(null);
+  
+  // Efeito para carregar itens padrão quando o componente for montado
+  useEffect(() => {
+    const loadDefaultItems = async () => {
+      try {
+        setLoading(true);
+        // Carrega os itens padrão
+        await refreshItems();
+      } catch (err) {
+        console.error('Erro ao carregar itens padrão:', err);
+        setError('Não foi possível carregar os itens do mercado. Tente recarregar a página.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadDefaultItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Carrega os dados mais recentes dos itens selecionados
   const refreshItems = useCallback(async () => {
